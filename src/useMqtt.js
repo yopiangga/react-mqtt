@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
-import buffer from "buffer";
-import process from "process";
-import mqtt from "precompiled-mqtt";
-
-window.Buffer = buffer.Buffer;
-window.process = process;
+import mqtt from "mqtt";
 
 const setting = {
   url: "ws://192.168.1.245:1883/mqtt",
