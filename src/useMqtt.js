@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import mqtt from "mqtt";
+import * as mqtt from "mqtt";
 
 const setting = {
-  url: "ws://192.168.1.245:1883/mqtt",
+  url: "ws://127.0.0.1:1883/mqtt",
   config: {
     username: "",
     password: "",
@@ -45,6 +45,12 @@ export default function useMqtt() {
     }
   };
 
+  const mqttPublish = async (topic, message) => {
+    if (!client) return
+
+    client.publish(topic, JSON.stringify(message))
+  }
+
   const mqttSubscribe = async (topic) => {
     if (client) {
       console.log("MQTT subscribe", topic);
@@ -58,7 +64,6 @@ export default function useMqtt() {
         (error) => {
           if (error) {
             console.log("MQTT Subscribe to topics error", error);
-            return;
           }
         }
       );
@@ -71,7 +76,6 @@ export default function useMqtt() {
       const clientMqtt = await client.unsubscribe(topic, (error) => {
         if (error) {
           console.log("MQTT Unsubscribe error", error);
-          return;
         }
       });
       setClient(clientMqtt);
@@ -80,9 +84,9 @@ export default function useMqtt() {
 
   useEffect(() => {
     mqttConnect();
-    // return () => {
-    //   mqttDisconnect();
-    // };
+    return () => {
+      mqttDisconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -110,6 +114,7 @@ export default function useMqtt() {
     mqttDisconnect,
     mqttSubscribe,
     mqttUnSubscribe,
+    mqttPublish,
     payload,
     isConnected,
   };
