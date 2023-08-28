@@ -1,23 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import useMqtt from "./useMqtt";
+import "./App.css";
 
 function App() {
+  const { mqttSubscribe, isConnected, payload } = useMqtt();
+  const [notificationList, setNotificationList] = useState([]);
+
+  useEffect(() => {}, []);
+
+  useEffect(() => {
+    if (isConnected) {
+      console.log("MQTT Connected");
+      mqttSubscribe("text");
+    }
+  }, [isConnected]);
+
+  useEffect(() => {
+    if (payload.message && ["text"].includes(payload.topic)) {
+      const newMessage = JSON.parse(payload.message);
+      const notif = [...notificationList, newMessage];
+      setNotificationList(notif);
+    }
+  }, [payload]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>MQTT React Vite</h1>
+      <div className="card">
+        <h2>Notifications : </h2>
+        <ol></ol>
+      </div>
     </div>
   );
 }
